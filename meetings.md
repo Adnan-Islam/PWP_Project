@@ -11,10 +11,7 @@ Two key points has been highlighted that should be noted though:</br>
     1.	It has been mentioned that in the first section, describe the RESTful API, we should include some information about the   
         advantages of our API. We should aim to sell our API towards clients. Therefore, a bit more information should be presented in 
         order to do the marketing for our web API. </br>
-    2.	Regarding the resources, it has been suggested to ensure minimum five resources are available for our API. As according to our  
-        provided diagram there are more than five resources, so it is advised we can make changes lately if we are not able to implement 
-        all the described resources.
-
+    2.	Regarding the resources, it has been suggested to ensure minimum five resources are available for our API. As according to our           provided diagram there are more than five resources, so it is advised we can make changes lately if we are not able to implement         all the described resources.
 
 ### Action points
 
