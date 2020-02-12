@@ -1,14 +1,23 @@
 # Meetings notes
 
 ## Meeting 1.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE: 12.02.2020**
+* **ASSISTANTS: Marta Cortes Orduna**
 
 ### Minutes
-*Summary of what was discussed during the meeting*
+
+According to feedback, there are no major issues that are required to change.
+Two key points has been highlighted that should be noted though:
+    1.	It has been mentioned that in the first section, describe the RESTful API, we should include some information about the   
+        advantages of our API. We should aim to sell our API towards clients. Therefore, a bit more information should be presented in 
+        order to do the marketing for our web API.
+    2.	Regarding the resources, it has been suggested to ensure minimum five resources are available for our API. As according to our 
+        provided diagram there are more than five resources, so it is advised we can make changes lately if we are not able to implement         all the described resources.
+
 
 ### Action points
-*List here the actions points discussed with assistants*
+
+Considering the feedback, we would be working on these concerns and make the required changes. 
 
 
 ### Comments from staff
