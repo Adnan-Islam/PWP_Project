@@ -54,6 +54,7 @@ class Slot(Base):
     __tablename__ = "slot"
     __table_args__ = (
         CheckConstraint('owner_id <> client_id', name='NoSameUsers'),
+        CheckConstraint('ending_time > starting_time', name='NoSameDate'),
     )
     id = Column(Integer, primary_key=True)
     starting_time = Column(DateTime, nullable=False,
