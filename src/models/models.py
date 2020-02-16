@@ -1,4 +1,8 @@
 import datetime
+
+from sqlalchemy import CheckConstraint
+
+
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean
 
 # for configuration and class code
@@ -48,7 +52,9 @@ class ResourceLink(Base):
 
 class Slot(Base):
     __tablename__ = "slot"
-
+    __table_args__ = (
+        CheckConstraint('owner_id <> client_id', name='NoSameUsers'),
+    )
     id = Column(Integer, primary_key=True)
     starting_time = Column(DateTime, nullable=False,
                            default=datetime.datetime.utcnow)
@@ -69,7 +75,9 @@ class Slot(Base):
 
 class BookRequest(Base):
     __tablename__ = "book_request"
-
+    __table_args__ = (
+        CheckConstraint('sender_id <> receiver_id', name='NoSameUsers'),
+    )
     id = Column(Integer, primary_key=True)
     approved = Column(Boolean, nullable=True)
     slot_id = Column(Integer, ForeignKey("slot.id"))
