@@ -23,7 +23,8 @@ You can use following commands
 
 To test the database implementation you can use pytest and project_db_test.py file. If you dont have pytest install it with
 * pip install pytest
-then you can use the following command in the project folder to run all test cases.
+
+Then you can use the following command in the project folder to run all test cases.
 * pytest 
 
 
