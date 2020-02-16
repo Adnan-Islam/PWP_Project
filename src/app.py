@@ -1,24 +1,29 @@
 import datetime
-
-from sqlalchemy import CheckConstraint
-
-
-from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean
-
-# for configuration and class code
-from sqlalchemy.ext.declarative import declarative_base
+from flask import Flask, request
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
+from sqlalchemy.engine import Engine
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean, CheckConstraint
 
 # for creating foreign key relationship between the tables
 from sqlalchemy.orm import relationship, backref
 
-# for configuration
-from sqlalchemy import create_engine
 
-Base = declarative_base()
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books-collection.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+db = SQLAlchemy(app)
 
-# Classes that are gonna be tables in SQLite
+@event.listens_for(Engine, "connect")
+def set_sqlite_pragma(dbapi_connection, connection_record):
+    cursor = dbapi_connection.cursor()
+    cursor.execute("PRAGMA foreign_keys=ON")
+    cursor.close()
+    
+    
 
-class User(Base):
+#Classes that are gonna be tables in SQLite
+class User(db.Model):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -27,7 +32,7 @@ class User(Base):
     bookables = relationship("Bookables", back_populates="user",passive_deletes=True)
     
 
-class Bookables(Base):
+class Bookables(db.Model):
     __tablename__ = 'bookable'
 
     id = Column(Integer, primary_key=True)
@@ -40,7 +45,7 @@ class Bookables(Base):
     slots = relationship("Slot", back_populates="bookable", passive_deletes=True)
 
 
-class ResourceLink(Base):
+class ResourceLink(db.Model):
     __tablename__ = 'resource_link'
 
     id = Column(Integer, primary_key=True)
@@ -50,7 +55,7 @@ class ResourceLink(Base):
     bookable = relationship("Bookables", single_parent=True, back_populates="resource_links")
 
 
-class Slot(Base):
+class Slot(db.Model):
     __tablename__ = "slot"
     __table_args__ = (
         CheckConstraint('owner_id <> client_id', name='NoSameUsers'),
@@ -72,7 +77,7 @@ class Slot(Base):
     book_requests = relationship("BookRequest", back_populates="slot", passive_deletes=True)
 
 
-class BookRequest(Base):
+class BookRequest(db.Model):
     __tablename__ = "book_request"
     __table_args__ = (
         CheckConstraint('sender_id <> receiver_id', name='NoSameUsers'),
@@ -89,3 +94,13 @@ class BookRequest(Base):
     receiver = relationship(
         "User", backref=backref("book_request_receiver", passive_deletes=True), foreign_keys=[receiver_id])
     slot = relationship("Slot", back_populates="book_requests")
+
+    
+
+
+
+#WebAPI    
+@app.route("/")
+def index():
+    return "Home Page"
+
