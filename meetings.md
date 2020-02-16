@@ -15,7 +15,8 @@ Two key points has been highlighted that should be noted though:</br>
 
 ### Action points
 
-Considering the feedback, we would be working on these concerns and make the required changes. 
+Considering the feedback, we have made the changes in our API description section.</br>
+And for resources, we will modify with the progression of our project. 
 
 
 ### Comments from staff
