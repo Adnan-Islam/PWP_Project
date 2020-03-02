@@ -23,14 +23,20 @@ And for resources, we will modify with the progression of our project.
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 2.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE: 24.02.2020**
+* **ASSISTANTS: Mika Oja**
 
 ### Minutes
-*Summary of what was discussed during the meeting*
+
+In meeting 2, several points have been highlighted and discussed for example, design of the database, implementation process, and testing part. It is mentioned and checked that most of them are done according to guidelines provided. </br>
+However, just one point mentioned that is required to change. It is advised to provide the information regarding the design of database
+in given table instead of describing elaborately. It is mentioned, it makes easier to read and understand.
+
+
 
 ### Action points
-*List here the actions points discussed with assistants*
+
+As per suggestion, we would make the changes. The illustration about database design would be provided in the given table.
 
 
 ### Comments from staff
