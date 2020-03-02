@@ -28,7 +28,7 @@ And for resources, we will modify with the progression of our project.
 
 ### Minutes
 
-In meeting 2, several points have been highlighted and discussed for example, design of the database, implementation process, and testing part. It is mentioned and checked that most of them are done according to guidelines provided. </br>
+In meeting 2, several points have been highlighted and discussed for example, design of the database, implementation process, and testing part. It is mentioned and checked that most of them are done according to guidelines provided. </br> </br>
 However, just one point mentioned that is required to change. It is advised to provide the information regarding the design of database
 in given table instead of describing elaborately. It is mentioned, it makes easier to read and understand.
 
