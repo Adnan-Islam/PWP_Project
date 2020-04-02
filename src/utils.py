@@ -84,11 +84,11 @@ class Utils(object):
         return Response(json.dumps(body), status_code, mimetype=MASON)
 
 
-#utility class for User model to create metadata
+# utility class for User model to create metadata
 class UserItemBuilder(MasonBuilder):
 
     @staticmethod
-    def product_schema():
+    def user_schema():
         schema = {
             "type": "object",
             "required": ["name"]
@@ -102,7 +102,7 @@ class UserItemBuilder(MasonBuilder):
 
     def add_control_edit_user(self, userID, url):
         self.add_control("edit", method="PUT", href=url,
-                         encoding="json", schema=self.product_schema())
+                         encoding="json", schema=self.user_schema())
 
     def add_control_delete_user(self, userID, url):
         self.add_control("delete", method="DELETE", href=url,
@@ -110,7 +110,7 @@ class UserItemBuilder(MasonBuilder):
 
     def add_control_add_user(self, url):
         self.add_control("bookingmeta:add-user", method="POST", href=url,
-                         encoding="json", schema=self.product_schema())
+                         encoding="json", schema=self.user_schema())
 
     def add_control_get_all_bookables(self, userID, url):
         self.add_control("bookingmeta:all-bookables", method="GET", href=url,
@@ -127,3 +127,41 @@ class UserItemBuilder(MasonBuilder):
     def add_control_get_bookables_by(self, userID, url):
         self.add_control("bookingmeta:bookables-by", method="GET", href=url,
                          title="All bookable items which have been created by the user")
+
+
+class BookableBuilder(MasonBuilder):
+    @staticmethod
+    def bookable_schema():
+        schema = {
+            "type": "object",
+            "required": ["name"]
+        }
+        props = schema["properties"] = {}
+        props["name"] = {
+            "description": "bookalbe's name",
+            "type": "string"
+        }
+        props["detail"] = {
+            "description": "bookable detail",
+            "type": "string"
+        }
+        return schema
+
+    def add_control_user(self, url):
+        self.add_control("bookingmeta:user",  href=url)
+
+    def add_control_add_bookable(self, userID, url):
+        self.add_control("bookingmeta:add", method="POST", href=url,
+                         title="Add Bookable to the users bookables list", schema=self.bookable_schema())
+
+    def add_control_slots_of(self, userID, bookableID, url):
+        self.add_control("bookingmeta:slots-of", href=url,
+                         title="Slots collection of this Bookable owned by the User")
+
+    def add_control_edit(self, userID, bookableID, url):
+        self.add_control("edit", method="PUT", href=url,
+                         encoding="json", title="Edit Bookable", schema=self.bookable_schema())
+
+    def add_control_delete(self, userID, bookableID, url):
+        self.add_control("delete", method="Delete", href=url,
+                         title="Delete the bookable")

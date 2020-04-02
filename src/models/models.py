@@ -24,7 +24,7 @@ class User(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(64), nullable=False)
     #Relationships
-    bookables = relationship("Bookables", back_populates="user",passive_deletes=True)
+    bookables = relationship("Bookables",cascade="all,delete", back_populates="user",passive_deletes=True)
     
 
 class Bookables(Base):
@@ -36,8 +36,8 @@ class Bookables(Base):
     details = Column(String(128), nullable=True)
     #Relationships
     user = relationship("User", back_populates="bookables", single_parent=True)
-    resource_links = relationship("ResourceLink", back_populates="bookable", passive_deletes=True)
-    slots = relationship("Slot", back_populates="bookable", passive_deletes=True)
+    resource_links = relationship("ResourceLink",cascade="all,delete", back_populates="bookable", passive_deletes=True)
+    slots = relationship("Slot", cascade="all,delete", back_populates="bookable", passive_deletes=True)
 
 
 class ResourceLink(Base):
@@ -69,7 +69,7 @@ class Slot(Base):
     bookable = relationship("Bookables", single_parent=True, back_populates="slots")
     owner = relationship("User", backref=backref("slot_owner", passive_deletes=True), foreign_keys=[owner_id])
     client = relationship("User", backref="slot_client", foreign_keys=[client_id])
-    book_requests = relationship("BookRequest", back_populates="slot", passive_deletes=True)
+    book_requests = relationship("BookRequest", cascade="all,delete", back_populates="slot", passive_deletes=True)
 
 
 class BookRequest(Base):
