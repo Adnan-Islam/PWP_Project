@@ -6,7 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean, CheckConstraint
 # Resources
-from resources.users import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser
+from resources.users import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser, BookableCollection
 from api import APIInitializer
 # for creating foreign key relationship between the tables
 from sqlalchemy.orm import relationship, backref
@@ -25,6 +25,8 @@ singelton.get_api().add_resource(BooakbleCollectionofUser,
                                  "/api/users/<userID>/my_bookables")
 singelton.get_api().add_resource(BookableItemofUser,
                                  "/api/users/<userID>/my_bookables/<bookableID>")
+singelton.get_api().add_resource(BookableCollection,
+                                 "/api/users/<userID>/bookables")                               
 db = SQLAlchemy(app)
 
 if __name__ == '__main__':
