@@ -1,4 +1,4 @@
-from models.models import User, Base, Bookables
+from models.models import User, Base, Bookables, Slot
 from api import APIInitializer
 from utils import MasonBuilder, Utils, UserItemBuilder, BookableBuilder, LINK_RELATIONS_URL, MASON
 from flask_restful import Resource
@@ -272,3 +272,161 @@ class BookableCollection(Resource):
 
 class BookableItem(Resource):
     pass
+
+class SlotCollectionofUser(Resource):
+    def get(self, userID, bookableID):
+        try:
+            user = session.query(User).filter_by(id=userID).first()
+            if user is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such a user ==> ID={}".format(userID), path=request.path
+                                                   )
+            
+            bookable_item = session.query(Bookables).filter_by(user_id=userID, id=bookableID).first()
+            if bookable_item is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such Bookable ==> ID={}".format(bookableID), path=request.path
+                                                   )
+            slots = session.query(Slot).filter_by(user_id=userID, bookable_id=bookableID)
+            singelton = APIInitializer.getInstance()
+            body = SlotBuilder(items=[])
+            
+            for i in slots:
+                item = MasonBuilder(starting_time=i.starting_time, ending_time=i.ending_time, availability=i.availability)
+                item.add_control("self", singelton.get_api().url_for(
+                    SlotItemofUser, userID=userID, bookableID=bookableID, slotID=i.id))
+                item.add_control("profile", href="/profiles/Slot/")
+                body["items"].append(item)
+            
+            body.add_namespace("bookingmeta", LINK_RELATIONS_URL)
+            body.add_control("self", singelton.get_api().url_for(
+                SlotCollectionofUser, userID=userID, bookableID=bookableID))
+            body.add_control_add_slot(userID=userID, bookableID=bookableID, url=singelton.get_api().url_for(
+                SlotCollectionofUser, userID=userID))
+            body.add_control_bookable(userID=userID, bookableID=bookableID, url=singelton.get_api().url_for(
+                BookableItemofUser, userID=userID, bookableID=bookableID))
+            return Response(json.dumps(body), 200, mimetype=MASON)
+
+        except (KeyError, ValueError):
+            return Utils.create_error_response(status_code=400, title="Invalid JSON document",
+                                               message="no attribute 'name' found in the request,'name'is string", path=request.path
+                                               )
+
+    def post(self, userID, bookableID):
+        if request.is_json:
+            try:
+                user = session.query(User).filter_by(id=userID).first()
+                if user is None:
+                    return Utils.create_error_response(status_code=404, title="Not Found",
+                                                       message="There is no such a user ==> ID={}".format(userID), path=request.path
+                                                       )
+                
+                slot = [Slot(
+                    starting_time=request.json['starting_time'], ending_time=request.json['ending_time'], availability=request.json['availability'], user_id=userID, bookable_id=bookableID)]
+                session.add_all(slot)
+                session.commit()
+                return None, 201
+            except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
+                return Utils.create_error_response(status_code=415, title="Unsupported media type",
+                                                   message="Requests must be JSON", path=request.path
+                                                   )
+            except (KeyError, ValueError):
+                return Utils.create_error_response(status_code=400, title="Invalid JSON document",
+                                                   message="no attribute 'name' found in the request, name is string", path=request.path
+                                                   )
+
+        else:
+            return Utils.create_error_response(status_code=415, title="Unsupported media type",
+                                               message="Requests must be JSON", path=request.path
+                                               )
+
+class SlotItemofUser(Resource):
+    def get(self, userID, bookableID, slotID):
+        try:
+            user = session.query(User).filter_by(id=userID).first()
+            if user is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such user ==> ID={}".format(userID), path=request.path
+                                                   )
+            bookable_item = session.query(Bookables).filter_by(
+                user_id=userID, id=bookableID).first()
+            if bookable_item is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such bookable item ==> ID={}".format(bookableID), path=request.path
+                                                   )
+                                                   
+            slot_item = session.query(Slot).filter_by(
+                user_id=userID, bookable_id=bookableID, slot_id=slotID).first()
+            if slot_item is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such slot item ==> ID={}".format(bookableID), path=request.path
+                                                   )
+                                                   
+            singelton = APIInitializer.getInstance()
+            body = SlotBuilder(
+                id=slotID, user_id=userID, bookable_id=bookableID, starting_time=i.starting_time, ending_time=i.ending_time, availability=i.availability)
+            body.add_namespace("bookingmeta", LINK_RELATIONS_URL)
+            body.add_control("self", request.path)
+            body.add_control("collection", singelton.get_api().url_for(
+                    SlotCollectionofUser, userID=userID, bookableID=bookableID))
+            body.add_control_user(
+                singelton.get_api().url_for(UserCollection))
+            body.add_control_edit(userID=userID, bookableID=bookableID, slotID=slotID,
+                                  url=request.path)
+            body.add_control_delete(
+                userID=userID, bookableID=bookableID, slotID=slotID, url=request.path)
+            return Response(json.dumps(body), 200, mimetype=MASON)
+        except (KeyError, ValueError):
+            pass
+
+    def put(self, userID, bookableID, slotID):
+        if request.json:
+            try:
+                new_starting_time = request.json["starting_time"]
+                new_ending_time = request.json["ending_time"]
+                new_availability = request.json['availability']
+                user = session.query(User).filter_by(id=userID).first()
+                bookable_item = session.query(Bookables).filter_by(
+                    user_id=userID, id=bookableID).first()
+                slot_item = session.query(Slot).filter_by(user_id=userID, bookable_id=bookableID, slot_id=slotID).first()
+                if new_starting_time is None or new_ending_time is None or new_availability is None:
+                    raise ValueError()
+
+                slot_item.starting_time = new_starting_time
+                slot_item.ending_time = new_ending_time
+                slot_item.availability = new_availability
+                session.commit()
+                return None, 204
+            except (KeyError, ValueError):
+                return Utils.create_error_response(status_code=400, title="Invalid JSON document",
+                                                   message="mandatory fields could not be found in the request", path=request.path
+                                                   )
+            except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
+                return Utils.create_error_response(status_code=415, title="Unsupported media type",
+                                                   message="Requests must be JSON", path=request.path
+                                                   )
+        else:
+            return Utils.create_error_response(status_code=415, title="Unsupported media type",
+                                               message="Requests must be JSON", path=request.path
+                                               )
+
+    def delete(self, userID, bookableID, slotID):
+        try:
+            slot_item = session.query(Slot).filter_by(
+                user_id=userID, bookable_id=bookableID, slot_id=slotID).first()
+            user = session.query(User).filter_by(id=userID).first()
+            if user is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such a user ==> ID={}".format(userID), path=request.path
+                                                   )
+            if slot_item is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such slot item ==> ID={}".format(bookableID), path=request.path
+                                                   )
+            session.query(Slot).filter_by(
+                user_id=userID, bookable_id=bookableID, slot_id=slotID).delete()
+            session.commit()
+
+            return None, 204
+        except (KeyError, ValueError):
+            pass

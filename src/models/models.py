@@ -62,7 +62,7 @@ class Slot(Base):
                            default=datetime.datetime.utcnow)
     ending_time = Column(DateTime, nullable=False)
     availability = Column(Boolean, nullable=False, default=True)
-    booakble_id = Column(Integer, ForeignKey("bookable.id", ondelete="CASCADE"), nullable=False)
+    bookable_id = Column(Integer, ForeignKey("bookable.id", ondelete="CASCADE"), nullable=False)
     owner_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     client_id = Column(Integer, ForeignKey("user.id"), nullable=True)
     #Relationships

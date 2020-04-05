@@ -165,3 +165,44 @@ class BookableBuilder(MasonBuilder):
     def add_control_delete(self, userID, bookableID, url):
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the bookable")
+
+class SlotBuilder(MasonBuilder):
+    @staticmethod
+    def slot_schema():
+        schema = {
+            "type": "object",
+            "required": ["name"]
+        }
+        props = schema["properties"] = {}
+        props["availability"] = {
+            "description": "Availability of the slot",
+            "type": "boolean"
+        }
+        props["starting_time"] = {
+            "description": "Starting time as datetime",
+            "type": "datetime"
+        }
+        props["ending_time"] = {
+            "description": "Ending time as datetime",
+            "type": "datetime"
+        }
+        return schema
+
+    def add_control_user(self, url):
+        self.add_control("bookingmeta:user",  href=url)
+
+    def add_control_add_slot(self, userID, bookableID, url):
+        self.add_control("bookingmeta:add", method="POST", href=url,
+                         title="Add Slot to the users slots list", schema=self.slot_schema())
+
+    def add_control_bookable(self, userID, bookableID, url):
+        self.add_control("bookingmeta:bookable", href=url,
+                         title="Bookable item that the Slot belongs to")
+
+    def add_control_edit(self, userID, bookableID, slotID, url):
+        self.add_control("edit", method="PUT", href=url,
+                         encoding="json", title="Edit Slot", schema=self.slot_schema())
+
+    def add_control_delete(self, userID, bookableID, slotID, url):
+        self.add_control("delete", method="Delete", href=url,
+                         title="Delete the Slot")

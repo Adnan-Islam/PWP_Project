@@ -6,7 +6,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean, CheckConstraint
 # Resources
-from resources.users import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser
+from resources.users import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser, SlotCollectionofUser, SlotItemofUser
 from api import APIInitializer
 # for creating foreign key relationship between the tables
 from sqlalchemy.orm import relationship, backref
@@ -19,12 +19,17 @@ app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books-collection.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # Resource routing
-singelton.get_api().add_resource(UserCollection, "/api/users")
-singelton.get_api().add_resource(UserItem, "/api/users/<userID>")
+singelton.get_api().add_resource(UserCollection, "/api/users/")
+singelton.get_api().add_resource(UserItem, "/api/users/<userID>/")
 singelton.get_api().add_resource(BooakbleCollectionofUser,
-                                 "/api/users/<userID>/my_bookables")
+                                 "/api/users/<userID>/my_bookables/")
 singelton.get_api().add_resource(BookableItemofUser,
-                                 "/api/users/<userID>/my_bookables/<bookableID>")
+                                 "/api/users/<userID>/my_bookables/<bookableID>/")
+singelton.get_api().add_resource(SlotCollectionofUser,
+                                 "/api/users/<userID>/my_bookables/<bookableID>/slots/")
+singelton.get_api().add_resource(SlotItemofUser,
+                                 "/api/users/<userID>/my_bookables/<bookableID>/slots/<slotID>/")
+                                 
 db = SQLAlchemy(app)
 
 if __name__ == '__main__':
