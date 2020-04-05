@@ -36,10 +36,10 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
-###########################################
-###########################################
+# ##########################################
+# ##########################################
 #Resources
-###########################################
+# ##########################################
 #Exceptions
 # KeyError and ValueError are thrown when the reqeuest is json but the keys or values in the request are not as the same as server expected 
 # TypeError is thrown when the request is not json
