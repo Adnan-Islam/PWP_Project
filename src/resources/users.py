@@ -36,13 +36,23 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.execute("PRAGMA foreign_keys=ON")
     cursor.close()
 
+###########################################
+###########################################
+#Resources
+###########################################
+#Exceptions
+# KeyError and ValueError are thrown when the reqeuest is json but the keys or values in the request are not as the same as server expected 
+# TypeError is thrown when the request is not json
 
 class UserCollection(Resource):
     def post(self):
+        #Check if the request is in the right form
         if request.is_json:
             try:
+                #Creating new user
                 new_user = [User(name=request.json['name'])]
                 session.add_all(new_user)
+                #commiting the changes
                 session.commit()
                 return None, 201
             except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
@@ -53,7 +63,6 @@ class UserCollection(Resource):
                 return Utils.create_error_response(status_code=400, title="Invalid JSON document",
                                                    message="no attribute 'name' found in the request,'name'is string", path=request.path
                                                    )
-
         else:
             return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                message="Requests must be JSON", path=request.path
@@ -63,11 +72,13 @@ class UserCollection(Resource):
 class UserItem(Resource):
     def get(self, userID):
         try:
+            #query the user based on the ID
             user = session.query(User).filter_by(id=userID).first()
             if user is None:
                 return Utils.create_error_response(status_code=404, title="Not Found",
                                                    message="There is no such a user ==> ID={}".format(userID), path=request.path
                                                    )
+            #getting a instance of our api which consists of resources' routes
             singelton = APIInitializer.getInstance()
             body = UserItemBuilder(id=user.id, name=user.name)
             body.add_namespace("bookingmeta", LINK_RELATIONS_URL)
@@ -86,9 +97,11 @@ class UserItem(Resource):
             pass
 
     def put(self, userID):
+        #Check if the request is in the right form
         if request.json:
             try:
                 new_name = request.json["name"]
+                #query the user based on the ID
                 user = session.query(User).filter_by(id=userID).first()
                 if new_name is None or user is None:
                     raise ValueError()
@@ -111,6 +124,7 @@ class UserItem(Resource):
 
     def delete(self, userID):
         try:
+            #query the user based on the ID
             user = session.query(User).filter_by(id=userID).first()
             if user is None:
                 return Utils.create_error_response(status_code=404, title="Not Found",
@@ -129,12 +143,14 @@ class UserItem(Resource):
 class BooakbleCollectionofUser(Resource):
     def get(self, userID):
         try:
+            #query the user based on the ID
             user = session.query(User).filter_by(id=userID).first()
             if user is None:
                 return Utils.create_error_response(status_code=404, title="Not Found",
                                                    message="There is no such a user ==> ID={}".format(userID), path=request.path
                                                    )
             bookables = session.query(Bookables).filter_by(user_id=userID)
+            #getting a instance of our api which consists of resources' routes
             singelton = APIInitializer.getInstance()
             body = BookableBuilder(items=[])
             for i in bookables:
@@ -199,6 +215,7 @@ class BookableItemofUser(Resource):
                 return Utils.create_error_response(status_code=404, title="Not Found",
                                                    message="There is no such a bookable item ==> ID={}".format(bookableID), path=request.path
                                                    )
+            #getting a instance of our api which consists of resources' routes
             singelton = APIInitializer.getInstance()
             body = BookableBuilder(
                 id=bookableID, user_id=userID, name=bookable_item.name, details=bookable_item.details)
@@ -267,8 +284,35 @@ class BookableItemofUser(Resource):
 
 
 class BookableCollection(Resource):
-    pass
+    def get(self, userID):
+        try:
+            #query the user based on the ID
+            user = session.query(User).filter_by(id=userID).first()
+            if user is None:
+                return Utils.create_error_response(status_code=404, title="Not Found",
+                                                   message="There is no such a user ==> ID={}".format(userID), path=request.path
+                                                   )
+            bookables = session.query(Bookables).all()
+            #getting a instance of our api which consists of resources' routes
+            singelton = APIInitializer.getInstance()
+            body = BookableBuilder(items=[])
+            for i in bookables:
+                item = MasonBuilder(name=i.name, details=i.details)
+                item.add_control("self", singelton.get_api().url_for(
+                    BookableCollection, userID=userID))
+                item.add_control("profile", href="/profiles/Bookable/")
+                body["items"].append(item)
+            body.add_namespace("bookingmeta", LINK_RELATIONS_URL)
+            body.add_control("self", singelton.get_api().url_for(
+                BookableCollection, userID=userID))
+            body.add_control_user(url=singelton.get_api().url_for(
+                UserItem, userID=userID))
+            return Response(json.dumps(body), 200, mimetype=MASON)
 
+        except (KeyError, ValueError):
+            return Utils.create_error_response(status_code=400, title="Invalid JSON document",
+                                               message="no attribute 'name' found in the request,'name'is string", path=request.path
+                                               )
 
 class BookableItem(Resource):
     pass

@@ -148,7 +148,7 @@ class BookableBuilder(MasonBuilder):
         return schema
 
     def add_control_user(self, url):
-        self.add_control("bookingmeta:user",  href=url)
+        self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
     def add_control_add_bookable(self, userID, url):
         self.add_control("bookingmeta:add", method="POST", href=url,
