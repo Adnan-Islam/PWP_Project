@@ -27,6 +27,8 @@ To test the database implementation you can use pytest and project_db_test.py fi
 Then you can use the following command in the project folder to run all test cases.
 * pytest 
 
+To start API running yo need to run __app.py__ file to do that run the following code in terminal:
+* python app.py
 
 __Remember to include all required documentation and HOWTOs, including how to create and populate the database, how to run and test the API, the url to the entrypoint and instructions on how to setup and run the client__
 
