@@ -43,28 +43,31 @@ As per suggestion, we would make the changes. The illustration about database de
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 3.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE: 19.03.2020**
+* **ASSISTANTS: Mika Oja**
 
 ### Minutes
-*Summary of what was discussed during the meeting*
+
+In meeting 3, we have been advised to work on some key areas. We are told to add an entry point in our API diagram, as well as to update urls for general accessible bookables and slots. Besides, it is mentioned to add error codes to the documentation. In addition, suggestion has been made to change some of the update and delete, as well as to add requests responses.
 
 ### Action points
-*List here the actions points discussed with assistants*
 
+We have taken the comments into account and have worked on those issues to make the changes.
 
 ### Comments from staff
 *ONLY USED BY COURSE STAFF: Additional comments from the course staff*
 
 ## Meeting 4.
-* **DATE:**
-* **ASSISTANTS:**
+* **DATE: 15.04.2020**
+* **ASSISTANTS: Ivan Sanchez Milara**
 
 ### Minutes
-*Summary of what was discussed during the meeting*
+
+Several points are addressed in meeting 4 and we are advised to make improvements on those issues. For instances, we are told to organize the code in more appropriate manner (currently looks bit messy), as well as comments should be included in coding. It is also mentioned to update readme file with providing proper guideline for user regarding how to run our API. Another key point is advised to ensure we have the coverage. Lastly, we are suggested to update time allocation table with proper timing.
 
 ### Action points
-*List here the actions points discussed with assistants*
+
+We have discussed among us and have made realistic plan to make the improvements according to given guidelines.
 
 
 ### Comments from staff
