@@ -1,6 +1,7 @@
 import datetime
 from flask import Flask, request
 from flask_restful import Api
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
@@ -14,6 +15,7 @@ from sqlalchemy.orm import relationship, backref
 
 # Initializing
 app = Flask(__name__)
+CORS(app)
 APIInitializer.setApp(app)
 singelton = APIInitializer.getInstance()
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///books-collection.db"

@@ -1,7 +1,7 @@
 from models.models import User, Base, Bookables, Slot
 from api import APIInitializer
 from utils import MasonBuilder, Utils, UserItemBuilder, BookableBuilder, LINK_RELATIONS_URL, MASON
-from flask_restful import Resource
+from flask_restful import Api, Resource
 from flask import Flask, request,  abort, Response
 from sqlalchemy import create_engine, update, delete
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +11,9 @@ import json
 import os
 import sys
 import inspect
+from flask_sqlalchemy import SQLAlchemy
+
+
 current_dir = os.path.dirname(os.path.abspath(
     inspect.getfile(inspect.currentframe())))
 parent_dir = os.path.dirname(current_dir)
@@ -46,23 +49,34 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 class UserCollection(Resource):
     def post(self):
+
         #Check if the request is in the right form
         if request.is_json:
             try:
+
                 #Creating new user
                 new_user = [User(name=request.json['name'])]
+
+                #add changes to the database
                 session.add_all(new_user)
+
                 #commiting the changes
                 session.commit()
+
+                #if there is no error then return 201
                 return None, 201
+
+            #Unsupported media type like the request JSON is malformed   
             except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
                 return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                    message="Requests must be JSON", path=request.path
                                                    )
+            #The request JSON is not we expected for
             except (KeyError, ValueError):
                 return Utils.create_error_response(status_code=400, title="Invalid JSON document",
                                                    message="no attribute 'name' found in the request,'name'is string", path=request.path
                                                    )
+        #The request JSON is not a JSON
         else:
             return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                message="Requests must be JSON", path=request.path
@@ -72,14 +86,18 @@ class UserCollection(Resource):
 class UserItem(Resource):
     def get(self, userID):
         try:
-            #query the user based on the ID
+            #Query the user based on the ID
             user = session.query(User).filter_by(id=userID).first()
+
+            #If there is no such a user 404 will be returned
             if user is None:
                 return Utils.create_error_response(status_code=404, title="Not Found",
                                                    message="There is no such a user ==> ID={}".format(userID), path=request.path
                                                    )
             #getting a instance of our api which consists of resources' routes
             singelton = APIInitializer.getInstance()
+
+            #building the controler for our response
             body = UserItemBuilder(id=user.id, name=user.name)
             body.add_namespace("bookingmeta", LINK_RELATIONS_URL)
             body.add_control("self", request.path)
@@ -89,9 +107,10 @@ class UserItem(Resource):
                 userID, singelton.get_api().url_for(UserItem, userID=userID))
             body.add_control_delete_user(
                 userID, singelton.get_api().url_for(UserItem, userID=userID))
-            # body.add_control_get_all_bookables(userId,api.url_for))
             body.add_control_get_bookables_by(userID=userID, url=singelton.get_api(
             ).url_for(BooakbleCollectionofUser, userID=userID))
+
+            #User has been found without any problem
             return Response(json.dumps(body), 200, mimetype=MASON)
         except (KeyError, ValueError):
             pass
@@ -100,23 +119,30 @@ class UserItem(Resource):
         #Check if the request is in the right form
         if request.json:
             try:
+                #New data which must  be replaced
                 new_name = request.json["name"]
+
                 #query the user based on the ID
                 user = session.query(User).filter_by(id=userID).first()
+
                 if new_name is None or user is None:
                     raise ValueError()
 
+                #updating user's information
                 user.name = new_name
                 session.commit()
                 return None, 204
+            #The request JSON is not we expected for
             except (KeyError, ValueError):
                 return Utils.create_error_response(status_code=400, title="Invalid JSON document",
                                                    message="no attribute 'name' found in the request,'name'is string", path=request.path
                                                    )
+            #Unsupported media type like the request JSON is malformed   
             except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
                 return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                    message="Requests must be JSON", path=request.path
                                                    )
+        #Unsupported media type like the request JSON is malformed   
         else:
             return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                message="Requests must be JSON", path=request.path
