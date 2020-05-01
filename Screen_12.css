@@ -1,0 +1,78 @@
+
+
+#content {
+		position: relative;
+		color: rgb(255, 102, 0);
+		font-size: 30px;
+		font-weight: bold;
+		text-align: center;	
+}
+
+h5, h6 {
+	color: white;
+}
+
+a {
+	color: rgb(255, 102, 0);
+	font-weight: bold;
+}
+
+
+a:link {
+	background-color: transparent;
+  	text-decoration: underline;
+}
+
+
+a:hover {
+	color: rgb(255, 102, 0);
+	text-decoration: none;
+}
+
+
+a:active {
+	color: red;
+} 
+ 
+
+input[type=text] {
+	box-sizing: border-box;
+	width: 520px;
+	padding: 15px; 
+	outline: none;
+	border: none; 
+	border-radius: 5px;
+	box-shadow: 2px 3px 3px 2px rgba(0, 0, 0, 0.9);
+}	
+
+
+input[type=text]:focus, textarea:focus {
+	background-color: rgb(230, 230, 230);
+	color: black;
+	font-weight: bold;
+	font-size: 20px,
+}
+
+
+button {
+	width: 200px; 
+	height: 50px;
+	color: white; 
+	padding: 0;
+	outline: none;
+	background-color: rgba(255, 102, 0, 0.9); 
+	font-weight: bold;
+	font-size: 25px; 
+	border: none; 
+	border-radius: 5px;
+	box-shadow: 2px 3px 3px 2px rgba(0, 0, 0, 0.9);
+}
+
+
+button:hover {
+	color: black;
+	outline: none;
+	cursor: pointer;
+}	
+
+
