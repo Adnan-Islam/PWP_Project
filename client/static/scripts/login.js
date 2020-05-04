@@ -36,13 +36,11 @@ $(document).ready(function () {
 
 
     $("#log_in_btn").click(function () {
-        var data = { "name": $("#name").val() };
-        console.log(JSON.stringify(data));
         $.ajax({
             url: "http://localhost:5000/api/users/" + $("#username_input").val() + "/",
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function (body, status, jqxhr) {
-                window.location = "../html/MyProfile.html" + "?" +  "id=" + body.id + "&name=" + body.name
+                window.location = "../html/myprofile.html" + "?" +  "id=" + body.id + "&name=" + body.name
             },
             error: function (jqxhr, type, error) {
                 console.log("ERROR (" + type + ") - " + error);

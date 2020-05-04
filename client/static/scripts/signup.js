@@ -1,8 +1,11 @@
 
-function UserCreated(body, status) {
-    window.location = "../html/MyProfile.html";
+function GetURL(keys, values) {
+    txt = "?";
+    for (i = 0, len = keys.length; i < len; i++) {
+        txt += keys[i] + "=" + values[i] + "&";
+    }
+    return txt.substring(0, txt.length - 1);
 }
-
 $(document).ready(function () {
 
     $("#sign_up_btn").click(function () {
@@ -15,7 +18,10 @@ $(document).ready(function () {
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             headers: { 'Access-Control-Allow-Origin': '*' },
-            success: UserCreated,
+            success: function (body, status, jqxhr) {
+                window.location = "../html/MyProfile.html" + GetURL(["id", "name"], [body.id, $("#name").val()]);
+
+            },
             error: function (jqxhr, type, error) {
                 console.log("ERROR (" + type + ") - " + error);
             }

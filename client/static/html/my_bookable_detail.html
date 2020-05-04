@@ -8,6 +8,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="../css/Screen_7.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script type="text/javascript" src="../scripts/jquery.js"></script>
+		<script type="text/javascript" src="../scripts/my_bookable_detail.js"></script>
 	</head>
 
 	<body style="background: rgba(0, 0, 0, 0.8)">
@@ -18,7 +20,7 @@
 				
 			<h5> My Bookable Name: ABCDEF </h5>
 				<div id="allbookables">
-					<table>  
+					<table id="bookable_table">  
 						<tr>
 							<th> Description </th>
 						</tr>	
@@ -29,19 +31,14 @@
 				 	</table><br><br><br><br><br><br>
 			 	</div> 
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_10.html" target="_parent">
-			 		<button> Organize Slots &#187;</button><br><br>
+			 		<button id="organize_slots_btn"> Organize Slots &#187;</button><br><br>
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_9.html" target="_parent">
-			 		<button> Edit &#187;</button><br><br>
+			 		<button id="edit_btn"> Edit </button><br><br>
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_6.html" target="_parent">
-			 		<button> Delete &#187;</button><br><br>
+			 		<button id="delete_btn"> Delete </button><br><br>
 
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_6.html" target="_parent">
-			 		<button>&#171; My Bookables </button>
-			 	</a>
+			 		<button id="back_to_my_bookable_btn">&#171; My Bookables </button>
 		</div>
 
 	</body>

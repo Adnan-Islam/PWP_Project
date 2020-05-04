@@ -7,7 +7,7 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean, CheckConstraint
 # Resources
-from resources.users import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser, BookableCollection, SlotCollectionofUser, SlotItemofUser
+from resources.all_resources import UserCollection, UserItem, BooakbleCollectionofUser, BookableItemofUser, BookableCollection, SlotCollectionofUser, SlotItemofUser
 
 from api import APIInitializer
 # for creating foreign key relationship between the tables

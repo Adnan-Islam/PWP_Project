@@ -70,7 +70,7 @@ class UserCollection(Resource):
                 returningvalue = {}
                 returningvalue['id'] = new_user.id
                 # if there is no error then return 201
-                return json.dumps(returningvalue), 201
+                return Response(json.dumps(returningvalue), 201)
 
             # Unsupported media type like the request JSON is malformed
             except (TypeError, exc.IntegrityError, exc.InvalidRequestError):
@@ -186,7 +186,7 @@ class BooakbleCollectionofUser(Resource):
             singelton = APIInitializer.getInstance()
             body = BookableBuilder(items=[])
             for i in bookables:
-                item = MasonBuilder(name=i.name, details=i.details)
+                item = MasonBuilder(id = i.id, name=i.name, details=i.details)
                 item.add_control("self", singelton.get_api().url_for(
                     BooakbleCollectionofUser, userID=userID))
                 item.add_control("profile", href="/profiles/Bookable/")
