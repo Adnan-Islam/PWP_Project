@@ -37,7 +37,7 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name');
         const id = urlParams.get('id');
-        window.location = "./all-bookables.html" + GetURL(["id", "name"], [id, name]);
+        window.location = "./all_bookables.html" + GetURL(["id", "name"], [id, name]);
 
     });
     $("#my_bookables_btn").click(function () {

@@ -14,13 +14,8 @@ function UpdateBookalbeInfo() {
         url: "http://localhost:5000/api/users/" + id + "/" + "my_bookables/" + bookable_id + "/",
         headers: { 'Access-Control-Allow-Origin': '*' },
         success: function (body, status, jqxhr) {
-            $("h5").html("My Bookable Name:" + body.name);
-            $("#bookable_table").html("<tr>" +
-                "<th> Description </th>" +
-                "</tr>" +
-                "<tr style=font-size: 20px>" +
-                "<td><h4>" + body.details + "</h4></td>" +
-                "</tr>");
+            $("#name_input").val(body.name);
+            $("#detail_input").val(body.details);
         },
         error: function (jqxhr, type, error) {
             console.log("ERROR (" + type + ") - " + error);
@@ -30,35 +25,34 @@ function UpdateBookalbeInfo() {
 
 $(document).ready(function () {
     UpdateBookalbeInfo();
-    $("#back_to_my_bookable_btn").click(function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        const id = urlParams.get('id');
-        window.location = "./mybookables.html" + GetURL(["id", "name"], [id, name]);
-
-    });
-    $("#delete_btn").click(function () {
+    $("#cancel_btn").click(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name');
         const id = urlParams.get('id');
         const bookable_id = urlParams.get('bookable_id');
+
+        window.location = "./my_bookable_detail.html" + GetURL(["id", "name", "bookable_id"], [id, name, bookable_id]);
+
+    });
+    $("#save_btn").click(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const id = urlParams.get('id');
+        const bookable_id = urlParams.get('bookable_id');
+        var data = { "name": $("#name_input").val(), "details": $("#detail_input").val() };
         $.ajax({
             url: "http://localhost:5000/api/users/" + id + "/" + "my_bookables/" + bookable_id + "/",
-            type: "DELETE",
+            type: "PUT",
+            data: JSON.stringify(data),
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function (body, status, jqxhr) {
-                window.location = "./mybookables.html" + GetURL(["id", "name"], [id, name]);
+                window.location = "./my_bookable_detail.html" + GetURL(["id", "name", "bookable_id"], [id, name, bookable_id]);
             },
             error: function (jqxhr, type, error) {
                 console.log("ERROR (" + type + ") - " + error);
             }
         });
-    });
-    $("#edit_btn").click(function () {
-        const urlParams = new URLSearchParams(window.location.search);
-        const name = urlParams.get('name');
-        const id = urlParams.get('id');
-        const bookable_id = urlParams.get('bookable_id');
-        window.location = "./edit_bookable.html" + GetURL(["id", "name","bookable_id"], [id, name, bookable_id]);
     });
 });

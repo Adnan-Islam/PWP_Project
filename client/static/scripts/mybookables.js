@@ -28,13 +28,12 @@ function RenderItems(items) {
     const urlParams = new URLSearchParams(window.location.search);
     const name = urlParams.get('name');
     const id = urlParams.get('id');
-    bookable_id = items[0].id;
     html = "<tr><th> Name </th><th> Description </th></tr>";
-    for (i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i++) {
         html += "<tr>"
             + "<td>" + items[i].name + "</td>"
-            + "<td>" + items[i].details + "<a href=../html/my_bookable_detail.html" + GetURL(["id", "name", "bookable_id"], [id, name, bookable_id]) + " target=_parent>"
-            + "<button class=table_button id=table_button" + bookable_id + "> details</button></a>"
+            + "<td>" + items[i].details + "<a href=../html/my_bookable_detail.html" + GetURL(["id", "name", "bookable_id"], [id, name, items[i].id]) + " target=_parent>"
+            + "<button class=table_button id=table_button" + items[i].id + "> details</button></a>"
             + "</td>"
             + "</tr>";
     }
@@ -48,6 +47,13 @@ $(document).ready(function () {
         const name = urlParams.get('name');
         const id = urlParams.get('id');
         window.location = "./myprofile.html" + GetURL(["id", "name"], [id, name]);
+
+    });
+    $("#new_bookable_btn").click(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const id = urlParams.get('id');
+        window.location = "./new_bookable.html" + GetURL(["id", "name"], [id, name]);
 
     });
 });

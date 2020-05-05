@@ -26,7 +26,7 @@ function GetAllBookalbes() {
 
 function RenderItems(items) {
     html = "<tr><th> Name </th><th> Description </th></tr>";
-    for (i = 0; i < items.length; i++) {
+    for (let i = 0; i < items.length; i++) {
         html += "<tr>"
             + "<td>" + items[i].name + "</td>"
             + "<td>" + items[i].details + "<a href=./bookable_detail.html target=_parent>"
