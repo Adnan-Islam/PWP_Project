@@ -18,9 +18,8 @@ $(document).ready(function () {
             type: "POST",
             data: JSON.stringify(data),
             contentType: "application/json; charset=utf-8",
-            dataType: "json",
             headers: { 'Access-Control-Allow-Origin': '*' },
-            success: function (body, status, jqxhr) {
+            success: function (status, jqxhr) {
                 window.location = "../html/mybookables.html" + GetURL(["id", "name"], [id, name]);
 
             },
