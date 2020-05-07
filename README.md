@@ -11,11 +11,12 @@ Booking Managment System
 In this project we have used SQLite3 for the backend and SQLAlchemy as object-relational mapper. So the first thing you are going to need if you want to run this project is installing the dependencies, although all of these dependencies have been already provided in setup.py file on the root.
 So use the command 
 * pip install -e 
+
 And the application will be ready for testing and running.
 
 Then you can should set the environment variables for flask.
 You can use following commands for windows.(For mac/linux you should use "export" instead of "set")
-* set FLASK_APP=sensorhub
+* set FLASK_APP=bookingapi
 * set FLASK_ENV=development
 
 Now our api is ready for testing and running
