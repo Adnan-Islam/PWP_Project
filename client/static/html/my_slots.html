@@ -8,6 +8,8 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link rel="stylesheet" type="text/css" href="../css/Screen_10.css">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		<script type="text/javascript" src="../scripts/jquery.js"></script>
+		<script type="text/javascript" src="../scripts/my_slots.js"></script>
 	</head>
 
 	<body style="background: rgba(0, 0, 0, 0.8)">
@@ -18,7 +20,7 @@
 				
 			<h5> Slots </h5>
 				<div id="allbookables">
-					<table>  
+					<table id="slot_table">  
 						<tr>
 							<th> Starts </th>
 							<th> Ends </th>
@@ -61,12 +63,9 @@
 
 			 	</div> 
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_12.html" target="_parent">
-			 		<button> New Slot &#187;</button>
-			 	</a><br><br>
+			 		<button id="new_slot_btn"> New Slot</button>
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_7.html" target="_parent">
-			 		<button>&#171; My Bookable Name </button>
+			 		<button id="go_back_btn">&#171; My Bookable Name </button>
 			 	</a>
 		</div>
 

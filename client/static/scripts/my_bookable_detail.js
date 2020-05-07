@@ -61,4 +61,11 @@ $(document).ready(function () {
         const bookable_id = urlParams.get('bookable_id');
         window.location = "./edit_bookable.html" + GetURL(["id", "name","bookable_id"], [id, name, bookable_id]);
     });
+    $("#organize_slots_btn").click(function () {
+        const urlParams = new URLSearchParams(window.location.search);
+        const name = urlParams.get('name');
+        const id = urlParams.get('id');
+        const bookable_id = urlParams.get('bookable_id');
+        window.location = "./my_slots.html" + GetURL(["id", "name","bookable_id"], [id, name, bookable_id]);
+    });
 });

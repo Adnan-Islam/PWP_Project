@@ -11,16 +11,17 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name');
         const id = urlParams.get('id');
-        var data = { "name": $("#name_input").val(), "details": $("#detail_input").val() };
+        const bookable_id = urlParams.get('bookable_id');
+        var data = { "starting_time": $("#starting_time_input").val(), "ending_time": $("#ending_time_input").val(), "availability": $("#availability_radio").val() };
 
         $.ajax({
-            url: "http://localhost:5000/api/users/" + id + "/my_bookables/",
+            url: "http://localhost:5000/api/users/" + id + "/my_bookables/" + bookable_id +"/slots",
             type: "POST",
             data: JSON.stringify(data),
             contentType: "application/vnd.mason+json; charset=utf-8",
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function (status, jqxhr) {
-                window.location = "../html/mybookables.html" + GetURL(["id", "name"], [id, name]);
+                window.location = "../html/my_slots.html" + GetURL(["id", "name", "bookable_id"], [id, name, bookable_id]);
 
             },
             error: function (jqxhr, type, error) {
@@ -33,6 +34,7 @@ $(document).ready(function () {
         const urlParams = new URLSearchParams(window.location.search);
         const name = urlParams.get('name');
         const id = urlParams.get('id');
-        window.location = "../html/mybookables.html" + GetURL(["id", "name"], [id, name]);
+        const bookable_id = urlParams.get('bookable_id');
+        window.location = "../html/my_slots.html" + GetURL(["id", "name", "bookable_id"], [id, name, bookable_id]);
     });
 });

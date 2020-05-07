@@ -15,7 +15,7 @@ $(document).ready(function () {
             url: "http://localhost:5000/api/users/",
             type: "POST",
             data: JSON.stringify(data),
-            contentType: "application/json; charset=utf-8",
+            contentType: "application/vnd.mason+json; charset=utf-8",
             dataType: "json",
             headers: { 'Access-Control-Allow-Origin': '*' },
             success: function (body, status, jqxhr) {
