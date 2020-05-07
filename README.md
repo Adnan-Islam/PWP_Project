@@ -7,30 +7,37 @@ Booking Managment System
 * Student 3. Mohammad Hassan Sadeghein; Email: h.sadeghein96@gmail.com
 
 
-## Creating Database
-In this project we have used SQLite3 for the backend and SQLAlchemy as object-relational mapper. So the first thing you are going to need if you want to run this project is installing the dependencies, although all of these dependencies have been already provided in requirements.txt file on the root.
-You can use either 
-* pip install -r requirements.txt<br/>
- or
-* pip install Flask
-* pip install pysqlite3
-* pip install flask-sqlalchemy
+## Installing API
+In this project we have used SQLite3 for the backend and SQLAlchemy as object-relational mapper. So the first thing you are going to need if you want to run this project is installing the dependencies, although all of these dependencies have been already provided in setup.py file on the root.
+So use the command 
+* pip install -e 
+And the application will be ready for testing and running.
 
-Then you can run the database_setup.py to initialize the database and Populate.py to populate the database with some dummy data.
-You can use following commands
-* python database_setup.py
-* python Populate.py
+Then you can should set the environment variables for flask.
+You can use following commands for windows.(For mac/linux you should use "export" instead of "set")
+* set FLASK_APP=sensorhub
+* set FLASK_ENV=development
 
-To test the database implementation you can use pytest and project_db_test.py file. If you dont have pytest install it with
+Now our api is ready for testing and running
+
+## Running API
+
+For the first time you should initialize the database using command 
+* flask init-db
+
+Now you can run the api with command
+* flask run
+
+## Testing
+
+To test the database and api functionality you can use pytest. If you dont have pytest install it with
 * pip install pytest
 
 Then you can use the following command in the project folder to run all test cases.
 * pytest 
 
-## API
-
-To start API running yo need to run __app.py__ file to do that run the following code in terminal:
-* python app.py
+To obtain a coverage report you should run this command
+* pytest --cov-report term-missing --cov=app
 
 ## Client
 To start the client part, open __start.bat__ file.
