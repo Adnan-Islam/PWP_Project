@@ -166,6 +166,7 @@ class BookableBuilder(MasonBuilder):
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the bookable")
 
+
 class SlotBuilder(MasonBuilder):
     @staticmethod
     def slot_schema():
@@ -189,7 +190,7 @@ class SlotBuilder(MasonBuilder):
         return schema
 
     def add_control_user(self, url):
-        self.add_control("bookingmeta:user",  href=url)
+        self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
     def add_control_add_slot(self, userID, bookableID, url):
         self.add_control("bookingmeta:add", method="POST", href=url,

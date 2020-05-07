@@ -8,9 +8,9 @@ from jsonschema import validate
 from sqlalchemy.engine import Engine
 from sqlalchemy import event
 from sqlalchemy.exc import IntegrityError, StatementError
-
-from app import app, db
-from models.models import User, Base, Bookables, Slot
+from bookingapi.utils import LINK_RELATIONS_URL
+from bookingapi import create_app, db
+from bookingapi.models import User, Bookables, Slot
 
 
 
@@ -21,19 +21,22 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
     cursor.close()
 
 # based on http://flask.pocoo.org/docs/1.0/testing/
-# we don't need a client for database testing, just the db handle
 @pytest.fixture
 def client():
     db_fd, db_fname = tempfile.mkstemp()
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + db_fname
-    app.config["TESTING"] = True
-
-    db.create_all()
-    _populate_db()
-
+    config = {
+        "SQLALCHEMY_DATABASE_URI": "sqlite:///" + db_fname,
+        "TESTING": True
+    }
+    
+    app = create_app(config)
+    
+    with app.app_context():
+        db.create_all()
+        _populate_db()
+        
     yield app.test_client()
-
-    db.session.remove()
+    
     os.close(db_fd)
     os.unlink(db_fname)
 
@@ -50,8 +53,8 @@ def _populate_db():
         details="Planet Earth"
     )
     slot = Slot(
-        starting_time=datetime.datetime(2020, 3, 1),
-        ending_time=datetime.datetime(2020, 5, 2),
+        starting_time=datetime(2020, 3, 1),
+        ending_time=datetime(2020, 5, 2),
         availability=True
     )
     
@@ -62,11 +65,11 @@ def _populate_db():
     slot.bookable = bookable
     
     #add to database
-    db_handle.session.add(user)
-    db_handle.session.add(user2)
-    db_handle.session.add(bookable)
-    db_handle.session.add(slot)
-    db_handle.session.commit()
+    db.session.add(user)
+    db.session.add(user2)
+    db.session.add(bookable)
+    db.session.add(slot)
+    db.session.commit()
 
 def _get_user_json(uname="testuser"):
     """Creates a dummy User instance"""
@@ -80,9 +83,9 @@ def _get_bookable_json():
 def _get_slot_json():
     """Creates a dummy Slot instance"""
     return {
-        "starting_time": "{}".format(datetime.datetime(2020, 3, 1)),
-        "ending_time": "{}".format(datetime.datetime(2020, 5, 2)),
-        "availability": "True"
+        "starting_time": "{}".format(datetime(2020, 3, 1)),
+        "ending_time": "{}".format(datetime(2020, 5, 2)),
+        "availability": True
     }
      
 def _check_namespace(client, response):
@@ -92,8 +95,7 @@ def _check_namespace(client, response):
     """
     
     ns_href = response["@namespaces"]["bookingmeta"]["name"]
-    resp = client.get(ns_href)
-    assert resp.status_code == 200
+    assert ns_href == LINK_RELATIONS_URL
     
 def _check_control_get_method(ctrl, client, obj):
     """
@@ -118,7 +120,7 @@ def _check_control_delete_method(ctrl, client, obj):
     resp = client.delete(href)
     assert resp.status_code == 204
     
-def _check_control_put_method(ctrl, client, obj):
+def _check_control_put_method(ctrl, client, obj, data_provider):
     """
     Checks a PUT type control from a JSON object be it root document or an item
     in a collection. In addition to checking the "href" attribute, also checks
@@ -135,8 +137,7 @@ def _check_control_put_method(ctrl, client, obj):
     schema = ctrl_obj["schema"]
     assert method == "put"
     assert encoding == "json"
-    body = _get_sensor_json()
-    body["name"] = obj["name"]
+    body = data_provider()
     validate(body, schema)
     resp = client.put(href, json=body)
     assert resp.status_code == 204
@@ -184,28 +185,29 @@ class TestUserCollection(object):
         resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
         assert resp.status_code == 415
         
+        #test with wrong data types
+        
+        resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+        
         # test with valid and see that it exists afterward
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
-        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["name"] + "/")
+        assert resp.headers["Location"]
         resp = client.get(resp.headers["Location"])
         assert resp.status_code == 200
         body = json.loads(resp.data)
         assert body["name"] == "testuser"
         
-        # send same data again for 409
-        resp = client.post(self.RESOURCE_URL, json=valid)
-        assert resp.status_code == 409
-        
         # remove model field for 400
-        valid.pop("model")
+        valid.pop("name")
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
 
 class TestUserItem(object):
     
     RESOURCE_URL = "/api/users/1/"
-    INVALID_URL = "/api/users/9999/"
+    INVALID_URL = "/api/users/9999d/"
     
     def test_get(self, client):
         """
@@ -220,10 +222,10 @@ class TestUserItem(object):
         body = json.loads(resp.data)
         assert body["name"] == "user1"
         _check_namespace(client, body)
-        _check_control_get_method("profile", client, body)
+        _check_control_get_method("self", client, body)
         _check_control_get_method("bookingmeta:all-bookables", client, body)
         _check_control_get_method("bookingmeta:bookables-by", client, body)
-        _check_control_put_method("edit", client, body)
+        _check_control_put_method("edit", client, body, _get_user_json)
         resp = client.get(self.INVALID_URL)
         assert resp.status_code == 404
 
@@ -231,7 +233,7 @@ class TestUserItem(object):
         """
         Tests the PUT method. Checks all of the possible erroe codes, and also
         checks that a valid request receives a 204 response. Also tests that
-        when name is changed, the sensor can be found from a its new URI. 
+        when name is changed, the user can be found from its new URI. 
         """
         
         valid = _get_user_json()
@@ -253,11 +255,19 @@ class TestUserItem(object):
         resp = client.put(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
         
-        valid = _get_sensor_json()
+        valid = _get_user_json()
         resp = client.put(self.RESOURCE_URL, json=valid)
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
+        
+    def test_delete(self, client):
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 204
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 404
+        resp = client.delete(self.INVALID_URL)
+        assert resp.status_code == 404
 
 class TestBookableCollection(object):
     """
@@ -265,7 +275,9 @@ class TestBookableCollection(object):
     resource. 
     """
     
-    RESOURCE_URL = "/api/users/<userID>/bookables/"
+    RESOURCE_URL = "/api/users/1/bookables/"
+    INVALID_URL = "/api/users/99999/bookables/"
+    
 
     def test_get(self, client):
         """
@@ -274,7 +286,11 @@ class TestBookableCollection(object):
         present, and the controls work. Also checks that all of the items from
         the DB popluation are present, and their controls.
         """
+        #invalid user
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
         
+        #correct request
         resp = client.get(self.RESOURCE_URL)
         assert resp.status_code == 200
         body = json.loads(resp.data)
@@ -282,9 +298,8 @@ class TestBookableCollection(object):
         assert len(body["items"]) == 1
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
             assert "name" in item
-            assert "detail" in item
+            assert "details" in item
 
 
 class TestBookableCollectionofUser(object):
@@ -293,7 +308,8 @@ class TestBookableCollectionofUser(object):
     resource. 
     """
     
-    RESOURCE_URL = "/api/users/<userID>/my_bookables/"
+    RESOURCE_URL = "/api/users/1/my_bookables/"
+    INVALID_URL = "/api/users/9999/my_bookables/"
 
     def test_get(self, client):
         """
@@ -310,9 +326,12 @@ class TestBookableCollectionofUser(object):
         assert len(body["items"]) == 1
         for item in body["items"]:
             _check_control_get_method("self", client, item)
-            _check_control_get_method("profile", client, item)
             assert "name" in item
-            assert "detail" in item
+            assert "details" in item
+        
+        #invalid user
+        resp = client.get(self.INVALID_URL)
+        assert resp.status_code == 404
 
     def test_post(self, client):
         """
@@ -327,29 +346,29 @@ class TestBookableCollectionofUser(object):
         resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
         assert resp.status_code == 415
         
+        #non existing user
+        resp = client.post(self.INVALID_URL, json=valid)
+        assert resp.status_code == 404
+        
         # test with valid and see that it exists afterward
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 201
-        assert resp.headers["Location"].endswith(self.RESOURCE_URL + valid["name"] + "/")
+        assert resp.headers["Location"]
         resp = client.get(resp.headers["Location"])
         assert resp.status_code == 200
         body = json.loads(resp.data)
         assert body["name"] == "hello_user"
-        assert body["detail"] == "Planet Earth"
-        
-        # send same data again for 409
-        resp = client.post(self.RESOURCE_URL, json=valid)
-        assert resp.status_code == 409
-        
-        # remove model field for 400
-        valid.pop("model")
+        assert body["details"] == "Planet Earth"
+        # remove name field for 400
+        valid.pop("name")
         resp = client.post(self.RESOURCE_URL, json=valid)
         assert resp.status_code == 400
 
 class TestBookableItemofUser(object):
     
     RESOURCE_URL = "/api/users/1/my_bookables/1/"
-    INVALID_URL = "/api/users/67/my_bookables/5/"
+    INVALID_USER = "/api/users/6999999/my_bookables/555555/"
+    INVALID_BOOKABLE = "/api/users/1/my_bookables/555555/"
     
     def test_get(self, client):
         """
@@ -363,9 +382,212 @@ class TestBookableItemofUser(object):
         assert resp.status_code == 200
         body = json.loads(resp.data)
         assert body["name"] == "test bookable"
-        assert body["detail"] == "Planet Earth"
+        assert body["details"] == "Planet Earth"
         _check_namespace(client, body)
-
-        resp = client.get(self.INVALID_URL)
+        #invalid user
+        resp = client.get(self.INVALID_USER)
+        assert resp.status_code == 404
+        #invalid bookable
+        resp = client.get(self.INVALID_BOOKABLE)
+        assert resp.status_code == 404
+        
+    def test_put(self, client):
+        """
+        Tests the PUT method. Checks all of the possible erroe codes, and also
+        checks that a valid request receives a 204 response. Also tests that
+        when name is changed, the user can be found from its new URI. 
+        """
+        
+        valid = _get_bookable_json()
+        
+        # test with wrong content type
+        resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+        
+        resp = client.put(self.INVALID_USER, json=valid)
+        assert resp.status_code == 404
+        
+        # test with valid (only change name)
+        valid["name"] = "test-bookable-edited"
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+        
+        # remove field for 400
+        valid.pop("name")
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+        
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        
+    def test_delete(self, client):
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 204
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 404
+        resp = client.delete(self.INVALID_USER)
         assert resp.status_code == 404
 
+
+class TestSlotCollectionofUser(object):
+
+    """
+    This class implements tests for each HTTP method in BookableCollectionofUser
+    resource. 
+    """
+    
+    RESOURCE_URL = "/api/users/1/my_bookables/1/slots/"
+    INVALID_USER = "/api/users/9999/my_bookables/1/slots/"
+    INVALID_BOOKABLE = "/api/users/1/my_bookables/99999/slots/"
+
+    def test_get(self, client):
+        """
+        Tests the GET method. Checks that the response status code is 200, and
+        then checks that all of the expected attributes and controls are
+        present, and the controls work. Also checks that all of the items from
+        the DB popluation are present, and their controls.
+        """
+        
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        _check_namespace(client, body)
+        assert len(body["items"]) == 1
+        for item in body["items"]:
+            _check_control_get_method("self", client, item)
+            assert "starting_time" in item
+            assert "ending_time" in item
+            assert "availability" in item
+        
+        #invalid user
+        resp = client.get(self.INVALID_USER)
+        assert resp.status_code == 404
+        
+        #invalid bookable
+        resp = client.get(self.INVALID_BOOKABLE)
+        assert resp.status_code == 404
+
+    def test_post(self, client):
+        """
+        Tests the POST method. Checks all of the possible error codes, and 
+        also checks that a valid request receives a 201 response with a 
+        location header that leads into the newly created resource.
+        """
+        
+        valid = _get_slot_json()
+        
+        # test with wrong content type
+        resp = client.post(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+        
+        #non existing user
+        resp = client.post(self.INVALID_USER, json=valid)
+        assert resp.status_code == 404
+        
+        #non existing bookable
+        resp = client.post(self.INVALID_BOOKABLE, json=valid)
+        assert resp.status_code == 404
+        
+        # test with valid and see that it exists afterward
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 201
+        assert resp.headers["Location"]
+        resp = client.get(resp.headers["Location"])
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["starting_time"]
+        assert body["ending_time"]
+        assert body["availability"] == True
+        
+        # remove name field for 400
+        valid.pop("starting_time")
+        resp = client.post(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+
+class TestSlotItemofUser(object):
+    
+    RESOURCE_URL = "/api/users/1/my_bookables/1/slots/1/"
+    INVALID_USER = "/api/users/6999999/my_bookables/555555/slots/1/"
+    INVALID_BOOKABLE = "/api/users/1/my_bookables/555555/slots/1/"
+    INVALID_SLOT = "/api/users/1/my_bookables/1/slots/15523123/"
+    
+    def test_get(self, client):
+        """
+        Tests the GET method. Checks that the response status code is 200, and
+        then checks that all of the expected attributes and controls are
+        present, and the controls work. Also checks that all of the items from
+        the DB popluation are present, and their controls.
+        """
+
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        assert body["starting_time"] == "{}".format(datetime(2020, 3, 1))
+        assert body["ending_time"] == "{}".format(datetime(2020, 5, 2))
+        assert body["availability"] == True
+        _check_namespace(client, body)
+        
+        #invalid user
+        resp = client.get(self.INVALID_USER)
+        assert resp.status_code == 404
+        #invalid bookable
+        resp = client.get(self.INVALID_BOOKABLE)
+        assert resp.status_code == 404
+        #invalid slot
+        resp = client.get(self.INVALID_SLOT)
+        assert resp.status_code == 404
+        
+    def test_put(self, client):
+        """
+        Tests the PUT method. Checks all of the possible erroe codes, and also
+        checks that a valid request receives a 204 response. Also tests that
+        when name is changed, the user can be found from its new URI. 
+        """
+        
+        valid = _get_slot_json()
+        
+        # test with wrong content type
+        resp = client.put(self.RESOURCE_URL, data=json.dumps(valid))
+        assert resp.status_code == 415
+        
+        #invalid user
+        resp = client.put(self.INVALID_USER, json=valid)
+        assert resp.status_code == 404
+        #invalid bookable
+        resp = client.put(self.INVALID_BOOKABLE, json=valid)
+        assert resp.status_code == 404
+        #invalid slot
+        resp = client.put(self.INVALID_SLOT, json=valid)
+        assert resp.status_code == 404
+        
+        # test with valid (only change availability)
+        valid["availability"] = False
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 204
+        
+        # remove field for 400
+        valid.pop("starting_time")
+        resp = client.put(self.RESOURCE_URL, json=valid)
+        assert resp.status_code == 400
+        
+        resp = client.get(self.RESOURCE_URL)
+        assert resp.status_code == 200
+        body = json.loads(resp.data)
+        
+    def test_delete(self, client):
+        #delete resource
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 204
+        #check if deleted
+        resp = client.delete(self.RESOURCE_URL)
+        assert resp.status_code == 404
+        #invalid user
+        resp = client.delete(self.INVALID_USER)
+        assert resp.status_code == 404
+        #invalid bookable
+        resp = client.delete(self.INVALID_BOOKABLE)
+        assert resp.status_code == 404
+        #invalid slot
+        resp = client.delete(self.INVALID_SLOT)
+        assert resp.status_code == 404

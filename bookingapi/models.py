@@ -1,24 +1,17 @@
 import datetime
-
+import click
 from sqlalchemy import CheckConstraint
-
-
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime, Float, Boolean
-
-# for configuration and class code
-from sqlalchemy.ext.declarative import declarative_base
+from flask.cli import with_appcontext
+from bookingapi import db
 
 # for creating foreign key relationship between the tables
 from sqlalchemy.orm import relationship, backref
 
-# for configuration
-from sqlalchemy import create_engine
-
-Base = declarative_base()
 
 # Classes that are gonna be tables in SQLite
 
-class User(Base):
+class User(db.Model):
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -27,7 +20,7 @@ class User(Base):
     bookables = relationship("Bookables",cascade="all,delete", back_populates="user",passive_deletes=True)
     
 
-class Bookables(Base):
+class Bookables(db.Model):
     __tablename__ = 'bookable'
 
     id = Column(Integer, primary_key=True)
@@ -40,7 +33,7 @@ class Bookables(Base):
     slots = relationship("Slot", cascade="all,delete", back_populates="bookable", passive_deletes=True)
 
 
-class ResourceLink(Base):
+class ResourceLink(db.Model):
     __tablename__ = 'resource_link'
 
     id = Column(Integer, primary_key=True)
@@ -50,7 +43,7 @@ class ResourceLink(Base):
     bookable = relationship("Bookables", single_parent=True, back_populates="resource_links")
 
 
-class Slot(Base):
+class Slot(db.Model):
     __tablename__ = "slot"
     __table_args__ = (
         CheckConstraint('owner_id <> client_id', name='NoSameUsers'),
@@ -58,9 +51,9 @@ class Slot(Base):
     )
     
     id = Column(Integer, primary_key=True)
-    starting_time = Column(DateTime, nullable=False,
-                           default=datetime.datetime.utcnow)
-    ending_time = Column(DateTime, nullable=False)
+    starting_time = Column(String(64), nullable=False,
+                           default=str(datetime.datetime.utcnow))
+    ending_time = Column(String(64), nullable=False)
     availability = Column(Boolean, nullable=False, default=True)
     bookable_id = Column(Integer, ForeignKey("bookable.id", ondelete="CASCADE"), nullable=False)
     owner_id = Column(Integer, ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
@@ -72,7 +65,7 @@ class Slot(Base):
     book_requests = relationship("BookRequest", cascade="all,delete", back_populates="slot", passive_deletes=True)
 
 
-class BookRequest(Base):
+class BookRequest(db.Model):
     __tablename__ = "book_request"
     __table_args__ = (
         CheckConstraint('sender_id <> receiver_id', name='NoSameUsers'),
@@ -89,3 +82,19 @@ class BookRequest(Base):
     receiver = relationship(
         "User", backref=backref("book_request_receiver", passive_deletes=True), foreign_keys=[receiver_id])
     slot = relationship("Slot", back_populates="book_requests")
+
+@click.command("init-db")
+@with_appcontext
+def init_db_command():
+    db.create_all()
+    
+
+@click.command("gen-test-user")
+@with_appcontext
+def generate_test_data():
+    s = User(
+        name="testuser"
+    )
+    
+    db.session.add(s)
+    db.session.commit()
