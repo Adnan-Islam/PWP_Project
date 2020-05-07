@@ -10,7 +10,7 @@ Booking Managment System
 ## Installing API
 In this project we have used SQLite3 for the backend and SQLAlchemy as object-relational mapper. So the first thing you are going to need if you want to run this project is installing the dependencies, although all of these dependencies have been already provided in setup.py file on the root.
 So use the command 
-* pip install -e 
+* pip install -e .
 
 And the application will be ready for testing and running.
 
