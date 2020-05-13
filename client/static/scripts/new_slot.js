@@ -12,10 +12,15 @@ $(document).ready(function () {
         const name = urlParams.get('name');
         const id = urlParams.get('id');
         const bookable_id = urlParams.get('bookable_id');
-        var data = { "starting_time": $("#starting_time_input").val(), "ending_time": $("#ending_time_input").val(), "availability": $("#availability_radio").val() };
+        if($("#availability_radio").is(':checked')){
+        var data = { "starting_time": $("#starting_time_input").val(), "ending_time": $("#ending_time_input").val(), "availability": true };
+        }
+        else{
+            var data = { "starting_time": $("#starting_time_input").val(), "ending_time": $("#ending_time_input").val(), "availability": false };
+        }
 
         $.ajax({
-            url: "http://localhost:5000/api/users/" + id + "/my_bookables/" + bookable_id +"/slots",
+            url: "http://localhost:5000/api/users/" + id + "/my_bookables/" + bookable_id +"/slots/",
             type: "POST",
             data: JSON.stringify(data),
             contentType: "application/vnd.mason+json; charset=utf-8",

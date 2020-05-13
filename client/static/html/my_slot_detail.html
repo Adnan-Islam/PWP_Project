@@ -2,60 +2,56 @@
 
 <html lang="en">
 
-	<head>
-		<title>Slot Information</title>
-		<meta charset="utf-8"/>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link rel="stylesheet" type="text/css" href="../css/Screen_11.css">
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-	</head>
+<head>
+	<title>Slot Information</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="stylesheet" type="text/css" href="../css/Screen_11.css">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<script type="text/javascript" src="../scripts/jquery.js"></script>
+	<script type="text/javascript" src="../scripts/my_slot_detail.js"></script>
+</head>
 
-	<body style="background: rgba(0, 0, 0, 0.8)">
-		
-		<div id="content">
-			
-			<h3> Booking Management System </h3>
-				
-			<h5> Slot Information </br> Slot ID: 45 </br> Client ID: 23 </br> Availibility: Available </h5>
-				<div id="allbookables">
-					<table>  
-						<tr>
-							<th> Starts </th>
-							<th> Ends </th>
-							<th> Description </th>
-						</tr>	
-						<tr>
-							<td>9:00 14/02/2020 </td>
-							<td>13:30 16/02/2020 </td>
-							<td>It is a balck Range Rover 2015 model.....</td>
-						</tr>
+<body style="background: rgba(0, 0, 0, 0.8)">
 
-						<tr>
-							<td>10:00 14/03/2020</td>
-							<td>18:00 18/03/2020 </td>
-							<td>It is a 1987 Toyota Nissa old car...</td>
-						</tr>
+	<div id="content">
 
-				 	</table>
+		<h3> Booking Management System </h3>
 
-				 	<br><br><br><br><br><br>
+		<h5> Slot Information </br> Slot ID: 45 </br> Client ID: 23 </br> Availibility: Available </h5>
+		<div id="allbookables">
+			<table id="slot_table">
+				<tr>
+					<th> Starts </th>
+					<th> Ends </th>
+					<th> Description </th>
+				</tr>
+				<tr>
+					<td>9:00 14/02/2020 </td>
+					<td>13:30 16/02/2020 </td>
+					<td>It is a balck Range Rover 2015 model.....</td>
+				</tr>
 
-			 	</div> 
+				<tr>
+					<td>10:00 14/03/2020</td>
+					<td>18:00 18/03/2020 </td>
+					<td>It is a 1987 Toyota Nissa old car...</td>
+				</tr>
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_13.html" target="_parent">
-			 		<button> Edit &#187;</button>
-			 	</a><br><br>
+			</table>
 
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_10.html" target="_parent">
-			 		<button>&#171; Delete</button>
-			 	</a><br><br>
+			<br><br><br><br><br><br>
 
-
-			 	<a href="file:///C:/Users/user/Desktop/PWP%20html/Screen_10.html" target="_parent">
-			 		<button>&#171; Slots </button>
-			 	</a>
 		</div>
 
-	</body>
+		<button id="edit_btn"> Edit </button>
+
+		<button id="delete_btn">Delete</button>
+
+
+		<button id="back_to_slots">&#171; Slots </button>
+	</div>
+
+</body>
 
 </html>
