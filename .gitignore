@@ -2,3 +2,4 @@
 *.pyc
 /*/*.pyc
 bookingapi.egg-info
+instance/development.db

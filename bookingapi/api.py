@@ -14,15 +14,15 @@ api = Api(api_bp)
 
 # Resource routing
 api.add_resource(UserCollection, "/api/users/")
-api.add_resource(UserItem, "/api/users/<userID>/")
-api.add_resource(BookableCollection, "/api/users/<userID>/bookables/")
-api.add_resource(BooakbleCollectionofUser, "/api/users/<userID>/my_bookables/")
+api.add_resource(UserItem, "/api/users/<user_id>/")
+api.add_resource(BookableCollection, "/api/users/<user_id>/bookables/")
+api.add_resource(BooakbleCollectionofUser, "/api/users/<user_id>/my_bookables/")
 api.add_resource(BookableItemofUser,
-                 "/api/users/<userID>/my_bookables/<bookableID>/")
+                 "/api/users/<user_id>/my_bookables/<bookable_id>/")
 api.add_resource(SlotCollectionofUser,
-                 "/api/users/<userID>/my_bookables/<bookableID>/slots/")
+                 "/api/users/<user_id>/my_bookables/<bookable_id>/slots/")
 api.add_resource(
-    SlotItemofUser, "/api/users/<userID>/my_bookables/<bookableID>/slots/<slotID>/")
+    SlotItemofUser, "/api/users/<user_id>/my_bookables/<bookable_id>/slots/<slot_id>/")
 
 
 @api_bp.route("/")
