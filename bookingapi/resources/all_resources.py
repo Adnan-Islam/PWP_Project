@@ -36,16 +36,16 @@ class UserCollection(Resource):
             return Utils.create_error_response(status_code=415, title="Unsupported media type",
                                                message="Requests must be JSON", path=request.path
                                                )
-            # Commiting into database
-            db.session.add(new_user)
-            db.session.commit()
-            db.session.refresh(new_user)
+        # Commiting into database
+        db.session.add(new_user)
+        db.session.commit()
+        db.session.refresh(new_user)
 
-            returningvalue = {}
-            returningvalue['id'] = new_user.id
+        returningvalue = {}
+        returningvalue['id'] = new_user.id
 
-            # if there is no error then return 201
-            return Response(json.dumps(returningvalue), 201, headers={"location": url_for("api.useritem", user_id=new_user.id)})
+        # if there is no error then return 201
+        return Response(json.dumps(returningvalue), 201, headers={"location": url_for("api.useritem", user_id=new_user.id)})
 
 
 class UserItem(Resource):
