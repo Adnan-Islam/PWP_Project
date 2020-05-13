@@ -165,7 +165,8 @@ class UserItemBuilder(MasonBuilder):
         
         : param str user_id: used in the url
         : param str url: the url that this control leads to
-        """        self.add_control("bookingmeta:all-bookables", method="GET", href=url,
+        """        
+        self.add_control("bookingmeta:all-bookables", method="GET", href=url,
                          title="Bookables collection of a User")
 
     def add_control_get_sent_request(self, user_id, url):
