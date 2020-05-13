@@ -122,6 +122,7 @@ class UserItemBuilder(MasonBuilder):
         return schema
 
     def add_control_edit_user(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the edit control.
@@ -129,10 +130,12 @@ class UserItemBuilder(MasonBuilder):
         : param str user_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", schema=self.user_schema())
 
     def add_control_delete_user(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the deleete control.
@@ -140,6 +143,7 @@ class UserItemBuilder(MasonBuilder):
         : param str user_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("delete", method="DELETE", href=url,
                          encoding="json")
 
@@ -154,6 +158,7 @@ class UserItemBuilder(MasonBuilder):
                          encoding="json", schema=self.user_schema())
 
     def add_control_get_all_bookables(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the all-bookables control.
@@ -171,10 +176,12 @@ class UserItemBuilder(MasonBuilder):
         : param str user_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:sent-requests", method="GET", href=url,
                          title="All sent requests")
 
     def add_control_get_recieved_request(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the received-requests control.
@@ -182,10 +189,12 @@ class UserItemBuilder(MasonBuilder):
         : param str user_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:received-requests", method="GET", href=url,
                          title="All received requests")
 
     def add_control_get_bookables_by(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the bookables-by control.
@@ -193,6 +202,7 @@ class UserItemBuilder(MasonBuilder):
         : param str user_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:bookables-by", method="GET", href=url,
                          title="All bookable items which have been created by the user")
 
@@ -234,6 +244,7 @@ class BookableBuilder(MasonBuilder):
         self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
     def add_control_add_bookable(self, user_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the add control.
@@ -253,10 +264,12 @@ class BookableBuilder(MasonBuilder):
         : param str bookable_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:slots-of", href=url,
                          title="Slots collection of this Bookable owned by the User")
 
     def add_control_edit(self, user_id, bookable_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the edit control.
@@ -265,10 +278,12 @@ class BookableBuilder(MasonBuilder):
         : param str bookable_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", title="Edit Bookable", schema=self.bookable_schema())
 
     def add_control_delete(self, user_id, bookable_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the delete control.
@@ -277,6 +292,7 @@ class BookableBuilder(MasonBuilder):
         : param str bookable_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the bookable")
 
@@ -322,6 +338,7 @@ class SlotBuilder(MasonBuilder):
         self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
     def add_control_add_slot(self, user_id, bookable_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the add control.
@@ -330,10 +347,12 @@ class SlotBuilder(MasonBuilder):
         : param str bookable_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:add", method="POST", href=url,
                          title="Add Slot to the users slots list", schema=self.slot_schema())
 
     def add_control_bookable(self, user_id, bookable_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the bookable control.
@@ -342,10 +361,12 @@ class SlotBuilder(MasonBuilder):
         : param str bookable_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("bookingmeta:bookable", href=url,
                          title="Bookable item that the Slot belongs to")
 
     def add_control_edit(self, user_id, bookable_id, slot_id, url):
+
         """
         A specified extension of function add_control in MasonBuilder. 
         Used to add the edit control.
@@ -355,10 +376,12 @@ class SlotBuilder(MasonBuilder):
         : param str slot_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", title="Edit Slot", schema=self.slot_schema())
 
     def add_control_delete(self, user_id, bookable_id, slot_id, url):
+
         """
         A specified delete of function add_control in MasonBuilder. 
         Used to add the bookable control.
@@ -368,5 +391,6 @@ class SlotBuilder(MasonBuilder):
         : param str slot_id: used in the url
         : param str url: the url that this control leads to
         """
+
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the Slot")
