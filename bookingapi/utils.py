@@ -7,7 +7,8 @@ LINK_RELATIONS_URL = "https://bookingmanagementsystem1.docs.apiary.io/#reference
 PRODUCT_PROFILE = "/profiles/product/"
 ERROR_PROFILE = "/profiles/error/"
 
-
+#This class is taken from the course material of PWP in University of Oulu, in this link
+# https://lovelace.oulu.fi/ohjelmoitava-web/programmable-web-project-spring-2020/implementing-rest-apis-with-flask/
 class MasonBuilder(dict):
     """
     A convenience class for managing dictionaries that represent Mason
@@ -74,9 +75,21 @@ class MasonBuilder(dict):
 
 
 class Utils(object):
-
+    """
+    Utils class for keeping utility functions in a place. All functions are static.
+    """
+    
     @staticmethod
     def create_error_response(status_code=None, title=None, message=None, path=None):
+        """
+        Creates an error response using for mason type using the given parameters.
+
+        : param str status_code: the status code of the response
+        : param str title: the title of the error
+        : param str message: the message of the error
+        : param str tipathtle: the path that the error occured
+        : output Response: created response using the information provided in parameters
+        """
         resource_url = path
         body = MasonBuilder(resource_url=resource_url)
         body.add_error(title, message)
@@ -84,11 +97,19 @@ class Utils(object):
         return Response(json.dumps(body), status_code, mimetype=MASON)
 
 
-# utility class for User model to create metadata
-class UserItemBuilder(MasonBuilder):
 
+class UserItemBuilder(MasonBuilder):
+    """
+    A extended class of MasonBuilder. Specified to add some specific controls that belong to UserItem resources
+    """
+    
     @staticmethod
     def user_schema():
+        """
+        A static method to get the user object's schema
+        
+        :output dict schema: dictionary type object schema
+        """
         schema = {
             "type": "object",
             "required": ["name"]
@@ -100,38 +121,94 @@ class UserItemBuilder(MasonBuilder):
         }
         return schema
 
-    def add_control_edit_user(self, userID, url):
+    def add_control_edit_user(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the edit control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", schema=self.user_schema())
 
-    def add_control_delete_user(self, userID, url):
+    def add_control_delete_user(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the deleete control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("delete", method="DELETE", href=url,
                          encoding="json")
 
     def add_control_add_user(self, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the edit control.
+        
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:add-user", method="POST", href=url,
                          encoding="json", schema=self.user_schema())
 
-    def add_control_get_all_bookables(self, userID, url):
-        self.add_control("bookingmeta:all-bookables", method="GET", href=url,
+    def add_control_get_all_bookables(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the all-bookables control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """        self.add_control("bookingmeta:all-bookables", method="GET", href=url,
                          title="Bookables collection of a User")
 
-    def add_control_get_sent_request(self, userID, url):
+    def add_control_get_sent_request(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the sent-requests control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:sent-requests", method="GET", href=url,
                          title="All sent requests")
 
-    def add_control_get_recieved_request(self, userID, url):
+    def add_control_get_recieved_request(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the received-requests control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:received-requests", method="GET", href=url,
                          title="All received requests")
 
-    def add_control_get_bookables_by(self, userID, url):
+    def add_control_get_bookables_by(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the bookables-by control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:bookables-by", method="GET", href=url,
                          title="All bookable items which have been created by the user")
 
 
 class BookableBuilder(MasonBuilder):
+    """
+    A extended class of MasonBuilder. Specified to add some specific controls that belong to Bookable resources
+    """ 
+    
     @staticmethod
     def bookable_schema():
+        """
+        A static method to get the Bookable object's schema
+        
+        :output dict schema: dictionary type object schema
+        """
         schema = {
             "type": "object",
             "required": ["name"]
@@ -148,28 +225,74 @@ class BookableBuilder(MasonBuilder):
         return schema
 
     def add_control_user(self, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the user control.
+        
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
-    def add_control_add_bookable(self, userID, url):
-        self.add_control("bookingmeta:add", method="POST", href=url,
+    def add_control_add_bookable(self, user_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the add control.
+        
+        : param str user_id: used in the url
+        : param str url: the url that this control leads to
+        """
+        self.add_control("bookingmeta:add", method="POST", href=url, 
                          title="Add Bookable to the users bookables list", schema=self.bookable_schema())
 
-    def add_control_slots_of(self, userID, bookableID, url):
+    def add_control_slots_of(self, user_id, bookable_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the slots-of control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:slots-of", href=url,
                          title="Slots collection of this Bookable owned by the User")
 
-    def add_control_edit(self, userID, bookableID, url):
+    def add_control_edit(self, user_id, bookable_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the edit control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", title="Edit Bookable", schema=self.bookable_schema())
 
-    def add_control_delete(self, userID, bookableID, url):
+    def add_control_delete(self, user_id, bookable_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the delete control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the bookable")
 
 
 class SlotBuilder(MasonBuilder):
+    """
+    A extended class of MasonBuilder. Specified to add some specific controls that belong to Bookable resources
+    """ 
+    
     @staticmethod
     def slot_schema():
+        """
+        A static method to get the Slot object's schema
+        
+        :output dict schema: dictionary type object schema
+        """
         schema = {
             "type": "object",
             "required": ["name"]
@@ -190,20 +313,60 @@ class SlotBuilder(MasonBuilder):
         return schema
 
     def add_control_user(self, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the user control.
+        
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:user",  href=url, title = "User Item")
 
-    def add_control_add_slot(self, userID, bookableID, url):
+    def add_control_add_slot(self, user_id, bookable_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the add control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:add", method="POST", href=url,
                          title="Add Slot to the users slots list", schema=self.slot_schema())
 
-    def add_control_bookable(self, userID, bookableID, url):
+    def add_control_bookable(self, user_id, bookable_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the bookable control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("bookingmeta:bookable", href=url,
                          title="Bookable item that the Slot belongs to")
 
-    def add_control_edit(self, userID, bookableID, slotID, url):
+    def add_control_edit(self, user_id, bookable_id, slot_id, url):
+        """
+        A specified extension of function add_control in MasonBuilder. 
+        Used to add the edit control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str slot_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("edit", method="PUT", href=url,
                          encoding="json", title="Edit Slot", schema=self.slot_schema())
 
-    def add_control_delete(self, userID, bookableID, slotID, url):
+    def add_control_delete(self, user_id, bookable_id, slot_id, url):
+        """
+        A specified delete of function add_control in MasonBuilder. 
+        Used to add the bookable control.
+        
+        : param str user_id: used in the url
+        : param str bookable_id: used in the url
+        : param str slot_id: used in the url
+        : param str url: the url that this control leads to
+        """
         self.add_control("delete", method="Delete", href=url,
                          title="Delete the Slot")
