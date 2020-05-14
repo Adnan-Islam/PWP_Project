@@ -51,7 +51,9 @@ class UserCollection(Resource):
 class UserItem(Resource):
 
 
-    """ Get a single user based on its id"""
+    """ Get a single user based on its id
+        : param int user_id: used to find user
+    """
 
     def get(self, user_id):
 
@@ -90,7 +92,10 @@ class UserItem(Resource):
 
 
 
-    """Update a user with new information"""
+    """Update a user with new information
+        the body must be JSON and contains name
+        : param int user_id: used to find user
+    """
 
     def put(self, user_id):
         try:
@@ -127,7 +132,9 @@ class UserItem(Resource):
 
 
 
-    """Delete a user based on its ID"""
+    """Delete a user based on its ID
+        : param int user_id: used to find user
+    """
 
     def delete(self, user_id):
         # query the user based on the ID
@@ -145,7 +152,10 @@ class UserItem(Resource):
 class BooakbleCollectionofUser(Resource):
 
 
-    """ Get a collection of user's bookables"""
+    """ Get a collection of user's bookables
+        : param int user_id: used to find user
+
+    """
 
     def get(self, user_id):
 
@@ -180,7 +190,11 @@ class BooakbleCollectionofUser(Resource):
 
 
 
-    """Create a bookable for a user"""
+    """Create a bookable for a user
+        The request body must be JSON and contains name and details
+        : param int user_id: used to find user
+
+    """
 
     def post(self, user_id):
         try:
@@ -215,7 +229,10 @@ class BooakbleCollectionofUser(Resource):
 class BookableItemofUser(Resource):
 
 
-    """Get a bookable of a user based on its ID"""
+    """Get a bookable of a user based on its ID
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+    """
 
     def get(self, user_id, bookable_id):
         # query the user based on the ID
@@ -258,7 +275,11 @@ class BookableItemofUser(Resource):
 
 
 
-    """Update a bookable of a user based on its ID"""
+    """Update a bookable of a user based on its ID
+        The request body must be JSON and contains name and details
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+    """
 
     def put(self, user_id, bookable_id):
         try:
@@ -294,7 +315,10 @@ class BookableItemofUser(Resource):
 
 
 
-    """Delete a bookable of a user based on its ID"""
+    """Delete a bookable of a user based on its ID
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+    """
 
     def delete(self, user_id, bookable_id):
         #Query the bookable and the user
@@ -316,7 +340,9 @@ class BookableItemofUser(Resource):
 class BookableCollection(Resource):
 
 
-    """Get all bookables existing in our database"""
+    """Get all bookables existing in our database
+        : param int user_id: used to find user
+    """
 
     def get(self, user_id):
 
@@ -357,7 +383,10 @@ class BookableItem(Resource):
 class SlotCollectionofUser(Resource):
 
 
-    """ Get a collection of slots of a bookable"""
+    """ Get a collection of slots of a bookable
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+    """
 
     def get(self, user_id, bookable_id):
         # query the user based on the ID
@@ -401,7 +430,11 @@ class SlotCollectionofUser(Resource):
 
 
 
-    """Create a slot for a bookable"""
+    """Create a slot for a bookable
+    The request body must be JSON and contains starting_time, ending_time, availability
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+    """
 
     def post(self, user_id, bookable_id):
         try:
@@ -442,7 +475,11 @@ class SlotCollectionofUser(Resource):
 class SlotItemofUser(Resource):
 
 
-    """Get a slot of a bookable item"""
+    """Get a slot of a bookable item
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+        : param int slot_id: used to find an slot of the bookable
+    """
 
     def get(self, user_id, bookable_id, slot_id):
 
@@ -488,7 +525,12 @@ class SlotItemofUser(Resource):
 
 
 
-    """Update a slot of a bookalbe"""
+    """Update a slot of a bookalbe
+        The request body must be JSON and contains starting_time, ending_time, availability
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+        : param int slot_id: used to find an slot of the bookable
+    """
 
     def put(self, user_id, bookable_id, slot_id):
         try:
@@ -539,7 +581,11 @@ class SlotItemofUser(Resource):
 
 
 
-    """Delete a slot of a bookalbe"""
+    """Delete a slot of a bookalbe
+        : param int user_id: used to find user
+        : param int bookable_id: used to find a bookalbe of the user
+        : param int slot_id: used to find an slot of the bookable
+    """
 
     def delete(self, user_id, bookable_id, slot_id):
 
